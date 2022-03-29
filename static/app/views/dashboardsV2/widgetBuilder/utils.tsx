@@ -22,7 +22,7 @@ export const RESULTS_LIMIT = 10;
 export enum DataSet {
   EVENTS = 'events',
   ISSUES = 'issues',
-  METRICS = 'metrics',
+  RELEASE = 'release',
 }
 
 export enum SortDirection {

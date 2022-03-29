@@ -98,7 +98,7 @@ function getDataSetQuery(widgetBuilderNewDesign: boolean): Record<DataSet, Widge
       conditions: '',
       orderby: widgetBuilderNewDesign ? IssueSortOptions.DATE : '',
     },
-    [DataSet.METRICS]: {
+    [DataSet.RELEASE]: {
       name: '',
       fields: [`sum(${SessionMetric.SESSION})`],
       columns: [],
@@ -112,7 +112,7 @@ function getDataSetQuery(widgetBuilderNewDesign: boolean): Record<DataSet, Widge
 const WIDGET_TYPE_TO_DATA_SET = {
   [WidgetType.DISCOVER]: DataSet.EVENTS,
   [WidgetType.ISSUE]: DataSet.ISSUES,
-  // [WidgetType.METRICS]: DataSet.METRICS,
+  [WidgetType.METRICS]: DataSet.RELEASE,
 };
 
 interface RouteParams {
@@ -326,9 +326,11 @@ function WidgetBuilder({
       }
 
       if (
-        prevState.displayType === DisplayType.TABLE &&
-        widgetToBeUpdated?.widgetType &&
-        WIDGET_TYPE_TO_DATA_SET[widgetToBeUpdated.widgetType] === DataSet.ISSUES
+        (prevState.displayType === DisplayType.TABLE &&
+          widgetToBeUpdated?.widgetType &&
+          WIDGET_TYPE_TO_DATA_SET[widgetToBeUpdated.widgetType] === DataSet.ISSUES) ||
+        (prevState.dataSet === DataSet.RELEASE &&
+          newDisplayType === DisplayType.WORLD_MAP)
       ) {
         // World Map display type only supports Events Dataset
         // so set state to default events query.
@@ -859,6 +861,7 @@ function WidgetBuilder({
                     dataSet={state.dataSet}
                     displayType={state.displayType}
                     onChange={handleDataSetChange}
+                    widgetBuilderNewDesign={widgetBuilderNewDesign}
                   />
                   {isTabularChart && (
                     <ColumnsStep
