@@ -35,6 +35,8 @@ export type AlertType =
   | 'crash_free_sessions'
   | 'crash_free_users';
 
+export type MetricAlertType = Exclude<AlertType, 'issues'>;
+
 export const WebVitalAlertTypes = new Set(['lcp', 'fid', 'cls', 'fcp']);
 
 export const AlertWizardAlertNames: Record<AlertType, string> = {
@@ -228,7 +230,7 @@ export type WizardRuleTemplate = {
 };
 
 export const AlertWizardRuleTemplates: Record<
-  Exclude<AlertType, 'issues'>,
+  MetricAlertType,
   Readonly<WizardRuleTemplate>
 > = {
   num_errors: {
@@ -326,6 +328,7 @@ export function getFunctionHelpText(alertType: AlertType): {
   if (hidePrimarySelectorSet.has(alertType)) {
     return {
       labelText: t('Select time interval'),
+      timeWindowText,
     };
   }
   return {
