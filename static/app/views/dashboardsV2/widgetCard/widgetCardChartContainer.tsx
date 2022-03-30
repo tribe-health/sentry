@@ -16,6 +16,7 @@ import {EChartDataZoomHandler, EChartEventHandler} from 'sentry/types/echarts';
 import {defined} from 'sentry/utils';
 import {getIssueFieldRenderer} from 'sentry/utils/dashboards/issueFieldRenderers';
 import {TableDataRow} from 'sentry/utils/discover/discoverQuery';
+import {eventViewFromWidget} from 'sentry/views/dashboardsV2/utils';
 
 import {Widget, WidgetType} from '../types';
 import {
@@ -27,7 +28,6 @@ import WidgetCardChart from './chart';
 import IssueWidgetQueries from './issueWidgetQueries';
 import MetricsWidgetQueries from './metricsWidgetQueries';
 import WidgetQueries from './widgetQueries';
-import {eventViewFromWidget} from 'sentry/views/dashboardsV2/utils';
 
 type TableResultProps = Pick<WidgetQueries['state'], 'errorMessage' | 'loading'> & {
   transformedResults: TableDataRow[];
