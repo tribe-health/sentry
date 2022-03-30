@@ -28,10 +28,15 @@ import {
   SPAN_OP_BREAKDOWN_FIELDS,
   SPAN_OP_RELATIVE_BREAKDOWN_FIELD,
 } from 'sentry/utils/discover/fields';
+import {
+  eventDetailsRouteWithEventView,
+  generateEventSlug,
+} from 'sentry/utils/discover/urls';
 import {getShortEventId} from 'sentry/utils/events';
 import {formatFloat, formatPercentage} from 'sentry/utils/formatters';
 import getDynamicText from 'sentry/utils/getDynamicText';
 import Projects from 'sentry/utils/projects';
+import {getTraceDetailsUrl} from 'sentry/views/performance/traceDetails/utils';
 import {
   filterToLocationQuery,
   SpanOperationBreakdownFilter,
@@ -231,24 +236,50 @@ type SpecialFields = {
 const SPECIAL_FIELDS: SpecialFields = {
   id: {
     sortField: 'id',
-    renderFunc: data => {
+    renderFunc: (data, {organization, eventView}) => {
       const id: string | unknown = data?.id;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || !eventView) {
         return null;
       }
+      const eventSlug = generateEventSlug(data);
 
-      return <Container>{getShortEventId(id)}</Container>;
+      const target = eventDetailsRouteWithEventView({
+        orgSlug: organization.slug,
+        eventSlug,
+        eventView,
+      });
+
+      return (
+        <Container>
+          <Tooltip title={t('View Event')}>
+            <OverflowLink data-test-id="view-event" to={target}>
+              {getShortEventId(id)}
+            </OverflowLink>
+          </Tooltip>
+        </Container>
+      );
     },
   },
   trace: {
     sortField: 'trace',
-    renderFunc: data => {
+    renderFunc: (data, {organization, location, eventView}) => {
       const id: string | unknown = data?.trace;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || !eventView) {
         return null;
       }
 
-      return <Container>{getShortEventId(id)}</Container>;
+      const dateSelection = eventView.normalizeDateSelection(location);
+      const target = getTraceDetailsUrl(organization, String(id), dateSelection, {});
+
+      return (
+        <Container>
+          <Tooltip title={t('View Trace')}>
+            <OverflowLink data-test-id="view-trace" to={target}>
+              {getShortEventId(id)}
+            </OverflowLink>
+          </Tooltip>
+        </Container>
+      );
     },
   },
   'issue.id': {

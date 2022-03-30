@@ -8,7 +8,7 @@ import Truncate from 'sentry/components/truncate';
 import space from 'sentry/styles/space';
 import {Organization} from 'sentry/types';
 import {TableData, TableDataRow} from 'sentry/utils/discover/discoverQuery';
-import {MetaType} from 'sentry/utils/discover/eventView';
+import EventView, {MetaType} from 'sentry/utils/discover/eventView';
 import {getFieldRenderer} from 'sentry/utils/discover/fieldRenderers';
 import {fieldAlignment} from 'sentry/utils/discover/fields';
 import withOrganization from 'sentry/utils/withOrganization';
@@ -17,6 +17,7 @@ import {decodeColumnOrder} from 'sentry/views/eventsV2/utils';
 
 type Props = {
   data: TableData['data'] | undefined;
+  eventView: EventView;
   fieldAliases: string[];
   fields: string[];
   loading: boolean;
@@ -37,6 +38,7 @@ type Props = {
 function SimpleTableChart({
   className,
   loading,
+  eventView,
   fields,
   metadata,
   data,
@@ -59,7 +61,7 @@ function SimpleTableChart({
       const fieldRenderer =
         getCustomFieldRenderer?.(column.key, tableMeta) ??
         getFieldRenderer(column.key, tableMeta);
-      const rendered = fieldRenderer(row, {organization, location});
+      const rendered = fieldRenderer(row, {organization, location, eventView});
       return (
         <TableCell key={`${index}-${columnIndex}:${column.name}`}>
           {topResultsIndicators && columnIndex === 0 && (

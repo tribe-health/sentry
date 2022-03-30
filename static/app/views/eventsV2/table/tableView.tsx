@@ -39,7 +39,6 @@ import {
 import {decodeList} from 'sentry/utils/queryString';
 import {MutableSearch} from 'sentry/utils/tokenizeSearch';
 import withProjects from 'sentry/utils/withProjects';
-import {getTraceDetailsUrl} from 'sentry/views/performance/traceDetails/utils';
 import {transactionSummaryRouteWithQuery} from 'sentry/views/performance/transactionSummary/utils';
 
 import {getExpandedResults, pushEventViewToLocation} from '../utils';
@@ -163,7 +162,7 @@ class TableView extends React.Component<TableViewProps> {
 
       if (tableData && tableData.meta) {
         const fieldRenderer = getFieldRenderer('id', tableData.meta);
-        value = fieldRenderer(dataRow, {organization, location});
+        value = fieldRenderer(dataRow, {organization, location, eventView});
       }
 
       const eventSlug = generateEventSlug(dataRow);
@@ -251,43 +250,7 @@ class TableView extends React.Component<TableViewProps> {
     const topEvents = eventView.topEvents ? parseInt(eventView.topEvents, 10) : TOP_N;
     const count = Math.min(tableData?.data?.length ?? topEvents, topEvents);
 
-    let cell = fieldRenderer(dataRow, {organization, location});
-
-    if (columnKey === 'id') {
-      const eventSlug = generateEventSlug(dataRow);
-
-      const target = eventDetailsRouteWithEventView({
-        orgSlug: organization.slug,
-        eventSlug,
-        eventView,
-      });
-
-      cell = (
-        <Tooltip title={t('View Event')}>
-          <StyledLink data-test-id="view-event" to={target}>
-            {cell}
-          </StyledLink>
-        </Tooltip>
-      );
-    } else if (columnKey === 'trace') {
-      const dateSelection = eventView.normalizeDateSelection(location);
-      if (dataRow.trace) {
-        const target = getTraceDetailsUrl(
-          organization,
-          String(dataRow.trace),
-          dateSelection,
-          {}
-        );
-
-        cell = (
-          <Tooltip title={t('View Trace')}>
-            <StyledLink data-test-id="view-trace" to={target}>
-              {cell}
-            </StyledLink>
-          </Tooltip>
-        );
-      }
-    }
+    const cell = fieldRenderer(dataRow, {organization, location, eventView});
 
     const fieldName = getAggregateAlias(columnKey);
     const value = dataRow[fieldName];

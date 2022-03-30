@@ -27,6 +27,7 @@ import WidgetCardChart from './chart';
 import IssueWidgetQueries from './issueWidgetQueries';
 import MetricsWidgetQueries from './metricsWidgetQueries';
 import WidgetQueries from './widgetQueries';
+import {eventViewFromWidget} from 'sentry/views/dashboardsV2/utils';
 
 type TableResultProps = Pick<WidgetQueries['state'], 'errorMessage' | 'loading'> & {
   transformedResults: TableDataRow[];
@@ -90,11 +91,18 @@ export function WidgetCardChartContainer({
       ? query.fields
       : [...query.columns, ...query.aggregates];
     const fieldAliases = query.fieldAliases ?? [];
+    const eventView = eventViewFromWidget(
+      widget.title,
+      widget.queries[0],
+      selection,
+      widget.displayType
+    );
 
     return (
       <StyledSimpleTableChart
         location={location}
         title=""
+        eventView={eventView}
         fields={queryFields}
         fieldAliases={fieldAliases}
         loading={loading}
