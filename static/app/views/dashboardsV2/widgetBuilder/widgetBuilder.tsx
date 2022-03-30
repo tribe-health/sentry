@@ -485,7 +485,10 @@ function WidgetBuilder({
     isColumn = false
   ) {
     const fieldStrings = newFields.map(generateFieldAsString);
-    const aggregateAliasFieldStrings = fieldStrings.map(getAggregateAlias);
+    const aggregateAliasFieldStrings =
+      state.dataSet === DataSet.RELEASE
+        ? fieldStrings
+        : fieldStrings.map(getAggregateAlias);
 
     const columnsAndAggregates = isColumn
       ? getColumnsAndAggregatesAsStrings(newFields)
@@ -496,7 +499,9 @@ function WidgetBuilder({
     const newQueries = state.queries.map(query => {
       const isDescending = query.orderby.startsWith('-');
       const orderbyAggregateAliasField = query.orderby.replace('-', '');
-      const prevAggregateAliasFieldStrings = query.aggregates.map(getAggregateAlias);
+      const prevAggregateAliasFieldStrings = query.aggregates.map(aggregate =>
+        state.dataSet === DataSet.RELEASE ? aggregate : getAggregateAlias(aggregate)
+      );
       const newQuery = cloneDeep(query);
 
       if (isColumn) {

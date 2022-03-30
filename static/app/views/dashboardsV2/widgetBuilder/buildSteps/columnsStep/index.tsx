@@ -2,9 +2,6 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import ExternalLink from 'sentry/components/links/externalLink';
 import {t, tct} from 'sentry/locale';
-import MetricsMetaStore from 'sentry/stores/metricsMetaStore';
-import MetricsTagStore from 'sentry/stores/metricsTagStore';
-import {useLegacyStore} from 'sentry/stores/useLegacyStore';
 import {Organization, TagCollection} from 'sentry/types';
 import {
   generateFieldAsString,
@@ -14,12 +11,12 @@ import {
 import Measurements from 'sentry/utils/measurements/measurements';
 import {DisplayType, WidgetQuery, WidgetType} from 'sentry/views/dashboardsV2/types';
 import {generateIssueWidgetFieldOptions} from 'sentry/views/dashboardsV2/widgetBuilder/issueWidget/utils';
-import {generateMetricsWidgetFieldOptions} from 'sentry/views/dashboardsV2/widgetBuilder/metricWidget/fields';
 
 import {DataSet, getAmendedFieldOptions} from '../../utils';
 import {BuildStep} from '../buildStep';
 
 import {ColumnFields} from './columnFields';
+import {ReleaseColumnFields} from './releaseColumnFields';
 
 interface Props {
   dataSet: DataSet;
@@ -46,16 +43,6 @@ export function ColumnsStep({
   explodedFields,
   tags,
 }: Props) {
-  const {metricsMeta} = useLegacyStore(MetricsMetaStore);
-  const {metricsTags} = useLegacyStore(MetricsTagStore);
-
-  const x = generateMetricsWidgetFieldOptions(
-    Object.values(metricsMeta),
-    Object.values(metricsTags).map(({key}) => key)
-  );
-
-  console.log({x});
-
   return (
     <BuildStep
       title={t('Choose your columns')}
@@ -96,21 +83,14 @@ export function ColumnsStep({
             />
           )}
         </Measurements>
-      ) : (
+      ) : dataSet === DataSet.ISSUES ? (
         <ColumnFields
           displayType={displayType}
           organization={organization}
           widgetType={widgetType}
           fields={explodedFields}
           errors={queryErrors?.[0] ? [queryErrors?.[0]] : undefined}
-          fieldOptions={
-            dataSet === DataSet.RELEASE
-              ? generateMetricsWidgetFieldOptions(
-                  Object.values(metricsMeta),
-                  Object.values(metricsTags).map(({key}) => key)
-                )
-              : generateIssueWidgetFieldOptions()
-          }
+          fieldOptions={generateIssueWidgetFieldOptions()}
           onChange={newFields => {
             const fieldStrings = newFields.map(generateFieldAsString);
             const splitFields = getColumnsAndAggregatesAsStrings(newFields);
@@ -120,6 +100,15 @@ export function ColumnsStep({
             newQuery.columns = splitFields.columns;
             onQueryChange(0, newQuery);
           }}
+        />
+      ) : (
+        <ReleaseColumnFields
+          displayType={displayType}
+          organization={organization}
+          widgetType={widgetType}
+          explodedFields={explodedFields}
+          queryErrors={queryErrors}
+          onYAxisOrColumnFieldChange={onYAxisOrColumnFieldChange}
         />
       )}
     </BuildStep>
