@@ -26,7 +26,7 @@ export function useMetricTags() {
     return () => {
       unmounted = true;
     };
-  }, [selection.projects, organization.slug]);
+  }, []);
 
   async function fetchMetricTags() {
     MetricsTagStore.reset();

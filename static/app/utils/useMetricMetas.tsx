@@ -26,7 +26,7 @@ export function useMetricMetas() {
     return () => {
       unmounted = true;
     };
-  }, [selection.projects, organization.slug]);
+  }, []);
 
   async function fetchMetricMetas() {
     MetricsMetaStore.reset();

@@ -894,6 +894,7 @@ function WidgetBuilder({
                   )}
                   {![DisplayType.TABLE].includes(state.displayType) && (
                     <YAxisStep
+                      dataSet={state.dataSet}
                       displayType={state.displayType}
                       widgetType={widgetType}
                       queryErrors={state.errors?.queries}
