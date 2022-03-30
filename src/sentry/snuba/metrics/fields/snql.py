@@ -159,6 +159,19 @@ def all_transactions(org_id, metric_ids, alias=None):
     )
 
 
+def failed_count_transaction(org_id, metric_ids, alias=None):
+    return _dist_count_aggregation_on_tx_status_factory(
+        org_id,
+        exclude_tx_statuses=[
+            TransactionMetricsKey.TRANSACTION_OK.value,
+            TransactionMetricsKey.TRANSACTION_CANCELLED.value,
+            TransactionMetricsKey.TRANSACTION_UNKNOWN.value,
+        ],
+        metric_ids=metric_ids,
+        alias=alias,
+    )
+
+
 def percentage(org_id: int, arg1_snql, arg2_snql, alias=None):
     return Function("minus", [1, Function("divide", [arg1_snql, arg2_snql])], alias)
 

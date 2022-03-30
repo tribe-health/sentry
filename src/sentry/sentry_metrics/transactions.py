@@ -11,3 +11,6 @@ class TransactionMetricsKey(Enum):
 
     TRANSACTION = "transaction"
     TRANSACTION_STATUS = "transaction.status"
+    TRANSACTION_OK = "ok"
+    TRANSACTION_CANCELLED = "cancelled"
+    TRANSACTION_UNKNOWN = "unknown"
