@@ -16,7 +16,7 @@ from sentry.utils.retries import TimedRetryPolicy
 
 from ... import save_team_assignments
 from ...index import OrganizationMemberSerializer
- 
+
 
 class InviteRequestPermissions(OrganizationPermission):
     scope_map = {
